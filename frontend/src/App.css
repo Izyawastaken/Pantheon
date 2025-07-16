@@ -960,22 +960,271 @@ input[type="number"] {
   }
 }
 
+/* Advanced Pokemon Card Styling */
+.pokemon-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  min-height: 400px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 1.25rem;
+  backdrop-filter: blur(8px);
+  text-align: left;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateY(24px) scale(0.98);
+  animation: cardIn 0.6s cubic-bezier(.23,1.12,.62,1.01) forwards;
+  animation-delay: var(--card-delay, 0ms);
+  position: relative;
+  cursor: pointer;
+}
+
+@keyframes cardIn {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.pokemon-card:hover {
+  box-shadow: 0 0 0 2px var(--accent-color), 0 4px 24px rgba(0,0,0,0.18);
+  filter: brightness(1.04);
+  transform: translateY(-2px);
+  transition: all 0.2s ease;
+}
+
+.pokemon-card .card-header {
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 3;
+}
+
+.pokemon-card h2 {
+  font-size: 1.4rem;
+  color: var(--accent-color);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.pokemon-card .item-line {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.pokemon-card > img {
+  position: absolute;
+  top: 4.5rem;
+  right: 1.25rem;
+  width: 120px;
+  height: 120px;
+  image-rendering: pixelated;
+  z-index: 2;
+  transition: transform 0.3s ease;
+}
+
+.pokemon-card:hover > img {
+  transform: scale(1.05);
+}
+
+.pokemon-card p {
+  margin: 0.25rem 0;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.85rem;
+}
+
+.pokemon-card strong {
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+}
+
+/* Info Pills */
+.info-pill {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin: 0.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.ability-pill {
+  background: rgba(156, 163, 175, 0.2);
+  color: #d1d5db;
+}
+
+.nature-pill {
+  background: rgba(139, 92, 246, 0.2);
+  color: #c4b5fd;
+}
+
+/* Type-based styling */
+.type-normal { background: rgba(168, 167, 122, 0.3); color: #a8a77a; }
+.type-fire { background: rgba(238, 129, 48, 0.3); color: #ee8130; }
+.type-water { background: rgba(99, 144, 240, 0.3); color: #6390f0; }
+.type-electric { background: rgba(247, 208, 44, 0.3); color: #f7d02c; }
+.type-grass { background: rgba(122, 199, 76, 0.3); color: #7ac74c; }
+.type-ice { background: rgba(150, 217, 214, 0.3); color: #96d9d6; }
+.type-fighting { background: rgba(194, 46, 40, 0.3); color: #c22e28; }
+.type-poison { background: rgba(163, 62, 161, 0.3); color: #a33ea1; }
+.type-ground { background: rgba(226, 191, 101, 0.3); color: #e2bf65; }
+.type-flying { background: rgba(169, 143, 243, 0.3); color: #a98ff3; }
+.type-psychic { background: rgba(249, 85, 135, 0.3); color: #f95587; }
+.type-bug { background: rgba(166, 185, 26, 0.3); color: #a6b91a; }
+.type-rock { background: rgba(182, 161, 54, 0.3); color: #b6a136; }
+.type-ghost { background: rgba(115, 87, 151, 0.3); color: #735797; }
+.type-dragon { background: rgba(111, 53, 252, 0.3); color: #6f35fc; }
+.type-dark { background: rgba(112, 87, 70, 0.3); color: #705746; }
+.type-steel { background: rgba(183, 183, 206, 0.3); color: #b7b7ce; }
+.type-fairy { background: rgba(214, 133, 173, 0.3); color: #d685ad; }
+
+/* Stat-based coloring */
+.stat-hp { color: #4ade80; }
+.stat-atk { color: #f97316; }
+.stat-def { color: #3b82f6; }
+.stat-spa { color: #a855f7; }
+.stat-spd { color: #06b6d4; }
+.stat-spe { color: #ec4899; }
+
+/* Stat Block */
+.stat-block {
+  margin: 1rem 0;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stat-line {
+  display: flex;
+  align-items: center;
+  margin: 0.25rem 0;
+  gap: 0.5rem;
+}
+
+.stat-label {
+  width: 40px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.stat-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.stat-bar-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 3px;
+  transition: width 0.8s ease-out;
+}
+
+.stat-modifier {
+  font-size: 0.75rem;
+  font-weight: 600;
+  width: 12px;
+  text-align: center;
+}
+
+.stat-modifier.plus {
+  color: #22c55e;
+}
+
+.stat-modifier.minus {
+  color: #ef4444;
+}
+
+.stat-value {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  width: 30px;
+  text-align: right;
+}
+
+/* Moves Section */
+.moves {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.move-pill-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+}
+
+.move-pill {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+}
+
+.move-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Item Icons */
+.item-icon {
+  width: 16px;
+  height: 16px;
+  margin-left: 0.25rem;
+  vertical-align: middle;
+  image-rendering: pixelated;
+}
+
+/* Loading States */
+.loading-stats,
+.loading-moves {
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+  font-size: 0.8rem;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-  .pokemon-editor-modal {
-    width: 100vw;
-    height: 100vh;
-    max-width: none;
-    max-height: none;
-    border-radius: 0;
+  .pokemon-card {
+    min-height: 350px;
     padding: 1rem;
   }
   
-  .stat-row {
-    flex-direction: column;
-    gap: 0.5rem;
+  .pokemon-card > img {
+    width: 100px;
+    height: 100px;
+    top: 3.5rem;
+    right: 1rem;
   }
   
-  .stat-slider-container {
+  .pokemon-card h2 {
+    font-size: 1.2rem;
+  }
+  
+  .stat-line {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .stat-bar {
     width: 100%;
   }
 }
