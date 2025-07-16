@@ -1,23 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, Trash2 } from 'lucide-react';
-import { mockPokemonData, mockNatures } from '../data/mockData';
+import { X, Save, Trash2, Sparkles } from 'lucide-react';
+import { useAccentColor } from '../contexts/AccentColorContext';
+import { mockPokemonData, mockNatures, mockMoves, mockItems, mockAbilities } from '../data/mockData';
 
 const PokemonEditor = ({ pokemon, onSave, onClose, onDelete }) => {
+  const { accentColor } = useAccentColor();
   const [formData, setFormData] = useState({
     name: '',
+    nickname: '',
     sprite: '',
+    gender: 'Unknown',
+    level: 50,
+    shiny: false,
+    teraType: 'Normal',
     moves: ['', '', '', ''],
     item: '',
     ability: '',
     nature: 'Hardy',
-    level: 50,
-    stats: {
+    baseStats: {
       hp: 100,
       attack: 100,
       defense: 100,
       spAttack: 100,
       spDefense: 100,
       speed: 100
+    },
+    evs: {
+      hp: 0,
+      attack: 0,
+      defense: 0,
+      spAttack: 0,
+      spDefense: 0,
+      speed: 0
     },
     ivs: {
       hp: 31,
@@ -30,11 +44,31 @@ const PokemonEditor = ({ pokemon, onSave, onClose, onDelete }) => {
     notes: ''
   });
 
+  const [isVisible, setIsVisible] = useState(false);
+
   useEffect(() => {
     if (pokemon) {
-      setFormData(pokemon);
+      setFormData({
+        ...formData,
+        ...pokemon
+      });
     }
+    // Disable body scroll
+    document.body.style.overflow = 'hidden';
+    // Trigger animation
+    setTimeout(() => setIsVisible(true), 10);
+    
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
   }, [pokemon]);
+
+  const handleClose = () => {
+    setIsVisible(false);
+    setTimeout(() => {
+      onClose();
+    }, 300);
+  };
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -52,22 +86,24 @@ const PokemonEditor = ({ pokemon, onSave, onClose, onDelete }) => {
     }));
   };
 
-  const handleStatChange = (stat, value) => {
+  const handleEVChange = (stat, value) => {
+    const newValue = Math.max(0, Math.min(252, parseInt(value) || 0));
     setFormData(prev => ({
       ...prev,
-      stats: {
-        ...prev.stats,
-        [stat]: parseInt(value)
+      evs: {
+        ...prev.evs,
+        [stat]: newValue
       }
     }));
   };
 
   const handleIVChange = (stat, value) => {
+    const newValue = Math.max(0, Math.min(31, parseInt(value) || 0));
     setFormData(prev => ({
       ...prev,
       ivs: {
         ...prev.ivs,
-        [stat]: parseInt(value)
+        [stat]: newValue
       }
     }));
   };
@@ -75,7 +111,6 @@ const PokemonEditor = ({ pokemon, onSave, onClose, onDelete }) => {
   const handleSave = () => {
     if (!formData.name.trim()) return;
     
-    // Find sprite from mock data if name matches
     const foundPokemon = mockPokemonData.find(p => 
       p.name.toLowerCase() === formData.name.toLowerCase()
     );
@@ -85,196 +120,311 @@ const PokemonEditor = ({ pokemon, onSave, onClose, onDelete }) => {
       sprite: foundPokemon ? foundPokemon.sprite : formData.sprite || '/api/placeholder/96/96'
     };
     
-    onSave(pokemonToSave);
+    setIsVisible(false);
+    setTimeout(() => {
+      onSave(pokemonToSave);
+    }, 300);
+  };
+
+  const handleDelete = () => {
+    setIsVisible(false);
+    setTimeout(() => {
+      onDelete();
+    }, 300);
   };
 
   const statLabels = [
-    { key: 'hp', label: 'HP' },
-    { key: 'attack', label: 'Attack' },
-    { key: 'defense', label: 'Defense' },
-    { key: 'spAttack', label: 'Sp. Attack' },
-    { key: 'spDefense', label: 'Sp. Defense' },
-    { key: 'speed', label: 'Speed' }
+    { key: 'hp', label: 'HP', color: '#4ade80' },
+    { key: 'attack', label: 'Atk', color: '#f97316' },
+    { key: 'defense', label: 'Def', color: '#3b82f6' },
+    { key: 'spAttack', label: 'SpA', color: '#a855f7' },
+    { key: 'spDefense', label: 'SpD', color: '#06b6d4' },
+    { key: 'speed', label: 'Spe', color: '#ec4899' }
   ];
 
-  const getStatColor = (value) => {
-    if (value < 70) return 'from-red-500 to-red-600';
-    if (value < 120) return 'from-yellow-500 to-yellow-600';
-    return 'from-green-500 to-green-600';
+  const calculateFinalStat = (stat) => {
+    const base = formData.baseStats[stat];
+    const iv = formData.ivs[stat];
+    const ev = formData.evs[stat];
+    const level = formData.level;
+    
+    if (stat === 'hp') {
+      return Math.floor(((2 * base + iv + Math.floor(ev / 4)) * level) / 100) + level + 10;
+    } else {
+      return Math.floor(((2 * base + iv + Math.floor(ev / 4)) * level) / 100) + 5;
+    }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-sm">
-      <div className="glass-panel w-full max-w-4xl max-h-[90vh] overflow-y-auto m-4">
-        <div className="p-8">
-          {/* Header */}
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold">Edit Pokémon</h2>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-white transition-colors"
-            >
-              <X size={24} />
-            </button>
-          </div>
+  const getTotalEVs = () => {
+    return Object.values(formData.evs).reduce((sum, ev) => sum + ev, 0);
+  };
 
-          {/* Pokemon Sprite */}
-          <div className="text-center mb-8">
-            <div className="w-32 h-32 mx-auto rounded-full bg-gray-800 flex items-center justify-center overflow-hidden mb-4">
-              <img 
-                src={formData.sprite || '/api/placeholder/96/96'} 
-                alt={formData.name || 'Pokemon'}
-                className="w-24 h-24 object-contain"
-              />
+  const getRemainingEVs = () => {
+    return 508 - getTotalEVs();
+  };
+
+  const genders = ['Male', 'Female', 'Unknown'];
+  const teraTypes = ['Normal', 'Fire', 'Water', 'Electric', 'Grass', 'Ice', 'Fighting', 'Poison', 'Ground', 'Flying', 'Psychic', 'Bug', 'Rock', 'Ghost', 'Dragon', 'Dark', 'Steel', 'Fairy'];
+
+  return (
+    <div className={`pokemon-editor-overlay ${isVisible ? 'active' : ''}`}>
+      <div className={`pokemon-editor-modal ${isVisible ? 'active' : ''}`}>
+        {/* Header Section */}
+        <div className="editor-header">
+          <button
+            onClick={handleClose}
+            className="close-button"
+          >
+            <X size={24} />
+          </button>
+          
+          <div className="pokemon-image-section">
+            <div className="pokemon-image-container">
+              <div className="pokemon-image-ring">
+                <img 
+                  src={formData.sprite || '/api/placeholder/128/128'} 
+                  alt={formData.name || 'Pokemon'}
+                  className="pokemon-image"
+                />
+                {formData.shiny && (
+                  <div className="shiny-indicator">
+                    <Sparkles size={20} />
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <div className="pokemon-basic-info">
+              <div className="input-group">
+                <label>Pokémon Name</label>
+                <select
+                  value={formData.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  className="glass-select-large"
+                >
+                  <option value="">Select Pokémon</option>
+                  {mockPokemonData.map(p => (
+                    <option key={p.name} value={p.name}>{p.name}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div className="input-group">
+                <label>Nickname</label>
+                <input
+                  type="text"
+                  placeholder="Optional nickname"
+                  value={formData.nickname}
+                  onChange={(e) => handleInputChange('nickname', e.target.value)}
+                  className="glass-input-large"
+                />
+              </div>
+              
+              <div className="input-row">
+                <div className="input-group">
+                  <label>Gender</label>
+                  <select
+                    value={formData.gender}
+                    onChange={(e) => handleInputChange('gender', e.target.value)}
+                    className="glass-select-small"
+                  >
+                    {genders.map(g => (
+                      <option key={g} value={g}>{g}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div className="input-group">
+                  <label>Level</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="100"
+                    value={formData.level}
+                    onChange={(e) => handleInputChange('level', parseInt(e.target.value))}
+                    className="glass-input-small"
+                  />
+                </div>
+                
+                <div className="input-group">
+                  <label>Shiny</label>
+                  <button
+                    onClick={() => handleInputChange('shiny', !formData.shiny)}
+                    className={`shiny-toggle ${formData.shiny ? 'active' : ''}`}
+                  >
+                    <div className="toggle-slider"></div>
+                  </button>
+                </div>
+                
+                <div className="input-group">
+                  <label>Tera Type</label>
+                  <select
+                    value={formData.teraType}
+                    onChange={(e) => handleInputChange('teraType', e.target.value)}
+                    className="glass-select-small"
+                  >
+                    {teraTypes.map(t => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Body Section */}
+        <div className="editor-body">
+          {/* Item/Ability/Nature Row */}
+          <div className="main-attributes">
+            <div className="attribute-group">
+              <label>Item</label>
+              <select
+                value={formData.item}
+                onChange={(e) => handleInputChange('item', e.target.value)}
+                className="glass-select-medium"
+              >
+                <option value="">No Item</option>
+                {mockItems.map(item => (
+                  <option key={item} value={item}>{item}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="attribute-group">
+              <label>Ability</label>
+              <select
+                value={formData.ability}
+                onChange={(e) => handleInputChange('ability', e.target.value)}
+                className="glass-select-medium"
+              >
+                <option value="">Select Ability</option>
+                {mockAbilities.map(ability => (
+                  <option key={ability} value={ability}>{ability}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="attribute-group">
+              <label>Nature</label>
+              <select
+                value={formData.nature}
+                onChange={(e) => handleInputChange('nature', e.target.value)}
+                className="glass-select-medium"
+              >
+                {mockNatures.map(nature => (
+                  <option key={nature} value={nature}>{nature}</option>
+                ))}
+              </select>
             </div>
           </div>
 
-          {/* Pokemon Name */}
-          <div className="mb-8">
-            <input
-              type="text"
-              placeholder="Pokémon Name"
-              value={formData.name}
-              onChange={(e) => handleInputChange('name', e.target.value)}
-              className="glass-input w-full text-2xl font-semibold text-center"
-            />
-          </div>
-
-          {/* Moves Grid */}
-          <div className="mb-8">
-            <h3 className="text-xl font-semibold mb-4">Moves</h3>
-            <div className="grid grid-cols-2 gap-4">
+          {/* Moves Row */}
+          <div className="moves-section">
+            <label className="section-label">Moves</label>
+            <div className="moves-grid">
               {formData.moves.map((move, index) => (
-                <input
-                  key={index}
-                  type="text"
-                  placeholder={`Move ${index + 1}`}
-                  value={move}
-                  onChange={(e) => handleMovesChange(index, e.target.value)}
-                  className="glass-input"
-                />
+                <div key={index} className="move-slot">
+                  <select
+                    value={move}
+                    onChange={(e) => handleMovesChange(index, e.target.value)}
+                    className="glass-select-move"
+                  >
+                    <option value="">Move {index + 1}</option>
+                    {mockMoves.map(m => (
+                      <option key={m} value={m}>{m}</option>
+                    ))}
+                  </select>
+                </div>
               ))}
             </div>
           </div>
+        </div>
 
-          {/* Item and Ability */}
-          <div className="grid grid-cols-2 gap-4 mb-8">
-            <div>
-              <label className="block text-sm font-medium mb-2">Item</label>
-              <input
-                type="text"
-                placeholder="Held Item"
-                value={formData.item}
-                onChange={(e) => handleInputChange('item', e.target.value)}
-                className="glass-input w-full"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">Ability</label>
-              <input
-                type="text"
-                placeholder="Ability"
-                value={formData.ability}
-                onChange={(e) => handleInputChange('ability', e.target.value)}
-                className="glass-input w-full"
-              />
+        {/* Stats Section */}
+        <div className="editor-stats">
+          <div className="stats-header">
+            <h3>Stats & Spread</h3>
+            <div className="remaining-evs">
+              Remaining: <span style={{ color: accentColor }}>{getRemainingEVs()}</span>
             </div>
           </div>
-
-          {/* Stats */}
-          <div className="mb-8">
-            <h3 className="text-xl font-semibold mb-4">Stats</h3>
-            <div className="space-y-4">
-              {statLabels.map(({ key, label }) => (
-                <div key={key} className="flex items-center gap-4">
-                  <label className="w-20 text-sm font-medium">{label}</label>
-                  <div className="flex-1 relative">
+          
+          <div className="stats-grid">
+            {statLabels.map(({ key, label, color }) => (
+              <div key={key} className="stat-row">
+                <div className="stat-label">
+                  <span className="stat-name">{label}</span>
+                  <span className="base-stat">{formData.baseStats[key]}</span>
+                </div>
+                
+                <div className="stat-slider-container">
+                  <div className="ev-slider-wrapper">
                     <input
                       type="range"
-                      min="1"
-                      max="200"
-                      value={formData.stats[key]}
-                      onChange={(e) => handleStatChange(key, e.target.value)}
-                      className="stat-slider w-full"
-                      style={{
-                        background: `linear-gradient(to right, 
-                          rgb(239, 68, 68) 0%, 
-                          rgb(234, 179, 8) 50%, 
-                          rgb(34, 197, 94) 100%)`
+                      min="0"
+                      max="252"
+                      value={formData.evs[key]}
+                      onChange={(e) => handleEVChange(key, e.target.value)}
+                      className="ev-slider"
+                      style={{ 
+                        '--stat-color': color,
+                        '--fill-width': `${(formData.evs[key] / 252) * 100}%`
                       }}
                     />
-                    <div className="absolute top-0 left-0 w-full h-2 rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full bg-gradient-to-r ${getStatColor(formData.stats[key])} rounded-full transition-all duration-300`}
-                        style={{ width: `${(formData.stats[key] / 200) * 100}%` }}
-                      />
-                    </div>
                   </div>
+                  
+                  <input
+                    type="number"
+                    min="0"
+                    max="252"
+                    value={formData.evs[key]}
+                    onChange={(e) => handleEVChange(key, e.target.value)}
+                    className="ev-input"
+                  />
+                  
                   <input
                     type="number"
                     min="0"
                     max="31"
                     value={formData.ivs[key]}
                     onChange={(e) => handleIVChange(key, e.target.value)}
-                    className="glass-input w-16 text-center"
-                    placeholder="IV"
+                    className="iv-input"
                   />
+                  
+                  <span className="final-stat">{calculateFinalStat(key)}</span>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
+        </div>
 
-          {/* Nature */}
-          <div className="mb-8">
-            <label className="block text-sm font-medium mb-2">Nature</label>
-            <select
-              value={formData.nature}
-              onChange={(e) => handleInputChange('nature', e.target.value)}
-              className="glass-select w-full"
-            >
-              {mockNatures.map(nature => (
-                <option key={nature} value={nature}>{nature}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Notes */}
-          <div className="mb-8">
-            <label className="block text-sm font-medium mb-2">Notes</label>
-            <textarea
-              placeholder="Additional notes..."
-              value={formData.notes}
-              onChange={(e) => handleInputChange('notes', e.target.value)}
-              className="glass-input w-full h-24 resize-none"
-            />
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex justify-end gap-4">
-            {pokemon && (
-              <button
-                onClick={onDelete}
-                className="btn-danger flex items-center gap-2"
-              >
-                <Trash2 size={16} />
-                Delete
-              </button>
-            )}
+        {/* Action Buttons */}
+        <div className="editor-actions">
+          {pokemon && (
             <button
-              onClick={onClose}
-              className="btn-secondary"
+              onClick={handleDelete}
+              className="btn-delete"
             >
-              Cancel
+              <Trash2 size={16} />
+              Delete
             </button>
-            <button
-              onClick={handleSave}
-              className="btn-primary flex items-center gap-2"
-              disabled={!formData.name.trim()}
-            >
-              <Save size={16} />
-              Save
-            </button>
-          </div>
+          )}
+          <button
+            onClick={handleClose}
+            className="btn-cancel"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            className="btn-save"
+            disabled={!formData.name.trim()}
+            style={{ '--accent-color': accentColor }}
+          >
+            <Save size={16} />
+            Save
+          </button>
         </div>
       </div>
     </div>
