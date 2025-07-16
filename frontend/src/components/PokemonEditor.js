@@ -364,7 +364,7 @@ const PokemonEditor = ({ pokemon, onSave, onClose, onDelete }) => {
           <div className="stats-header">
             <h3>Stats & Spread</h3>
             <div className="remaining-evs">
-              Remaining: <span style={{ color: accentColor }}>{getRemainingEVs()}</span>
+              Remaining: <span style={{ color: '#ffffff' }}>{getRemainingEVs()}</span>
             </div>
           </div>
           
