@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Save, Trash2, Sparkles } from 'lucide-react';
 import { useAccentColor } from '../contexts/AccentColorContext';
 import { mockPokemonData, mockNatures, mockMoves, mockItems, mockAbilities } from '../data/mockData';
+import SearchableSelect from './SearchableSelect';
 
 const PokemonEditor = ({ pokemon, onSave, onClose, onDelete }) => {
   const { accentColor } = useAccentColor();
@@ -71,10 +72,21 @@ const PokemonEditor = ({ pokemon, onSave, onClose, onDelete }) => {
   };
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setFormData(prev => {
+      const newData = { ...prev, [field]: value };
+      
+      // Update base stats when Pokemon changes
+      if (field === 'name' && value) {
+        const foundPokemon = mockPokemonData.find(p => 
+          p.name.toLowerCase() === value.toLowerCase()
+        );
+        if (foundPokemon && foundPokemon.baseStats) {
+          newData.baseStats = foundPokemon.baseStats;
+        }
+      }
+      
+      return newData;
+    });
   };
 
   const handleMovesChange = (index, value) => {
@@ -88,6 +100,15 @@ const PokemonEditor = ({ pokemon, onSave, onClose, onDelete }) => {
 
   const handleEVChange = (stat, value) => {
     const newValue = Math.max(0, Math.min(252, parseInt(value) || 0));
+    const currentTotal = getTotalEVs();
+    const currentStatEV = formData.evs[stat];
+    const difference = newValue - currentStatEV;
+    
+    // Check if the change would exceed the limit
+    if (currentTotal + difference > 508) {
+      return; // Don't allow the change
+    }
+    
     setFormData(prev => ({
       ...prev,
       evs: {
@@ -163,8 +184,15 @@ const PokemonEditor = ({ pokemon, onSave, onClose, onDelete }) => {
     return 508 - getTotalEVs();
   };
 
+  const canIncreaseEV = (stat) => {
+    const currentTotal = getTotalEVs();
+    const currentStatEV = formData.evs[stat];
+    return currentTotal < 508 && currentStatEV < 252;
+  };
+
   const genders = ['Male', 'Female', 'Unknown'];
   const teraTypes = ['Normal', 'Fire', 'Water', 'Electric', 'Grass', 'Ice', 'Fighting', 'Poison', 'Ground', 'Flying', 'Psychic', 'Bug', 'Rock', 'Ghost', 'Dragon', 'Dark', 'Steel', 'Fairy'];
+  const pokemonNames = mockPokemonData.map(p => p.name);
 
   return (
     <div className={`pokemon-editor-overlay ${isVisible ? 'active' : ''}`}>
@@ -197,16 +225,15 @@ const PokemonEditor = ({ pokemon, onSave, onClose, onDelete }) => {
             <div className="pokemon-basic-info">
               <div className="input-group">
                 <label>Pokémon Name</label>
-                <select
+                <SearchableSelect
+                  options={pokemonNames}
                   value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  onChange={(value) => handleInputChange('name', value)}
+                  placeholder="Select Pokémon"
                   className="glass-select-large"
-                >
-                  <option value="">Select Pokémon</option>
-                  {mockPokemonData.map(p => (
-                    <option key={p.name} value={p.name}>{p.name}</option>
-                  ))}
-                </select>
+                  allowEmpty={true}
+                  emptyText="None"
+                />
               </div>
               
               <div className="input-group">
@@ -223,15 +250,13 @@ const PokemonEditor = ({ pokemon, onSave, onClose, onDelete }) => {
               <div className="input-row">
                 <div className="input-group">
                   <label>Gender</label>
-                  <select
+                  <SearchableSelect
+                    options={genders}
                     value={formData.gender}
-                    onChange={(e) => handleInputChange('gender', e.target.value)}
+                    onChange={(value) => handleInputChange('gender', value)}
+                    placeholder="Select Gender"
                     className="glass-select-small"
-                  >
-                    {genders.map(g => (
-                      <option key={g} value={g}>{g}</option>
-                    ))}
-                  </select>
+                  />
                 </div>
                 
                 <div className="input-group">
@@ -258,15 +283,13 @@ const PokemonEditor = ({ pokemon, onSave, onClose, onDelete }) => {
                 
                 <div className="input-group">
                   <label>Tera Type</label>
-                  <select
+                  <SearchableSelect
+                    options={teraTypes}
                     value={formData.teraType}
-                    onChange={(e) => handleInputChange('teraType', e.target.value)}
+                    onChange={(value) => handleInputChange('teraType', value)}
+                    placeholder="Select Type"
                     className="glass-select-small"
-                  >
-                    {teraTypes.map(t => (
-                      <option key={t} value={t}>{t}</option>
-                    ))}
-                  </select>
+                  />
                 </div>
               </div>
             </div>
@@ -279,43 +302,39 @@ const PokemonEditor = ({ pokemon, onSave, onClose, onDelete }) => {
           <div className="main-attributes">
             <div className="attribute-group">
               <label>Item</label>
-              <select
+              <SearchableSelect
+                options={mockItems}
                 value={formData.item}
-                onChange={(e) => handleInputChange('item', e.target.value)}
+                onChange={(value) => handleInputChange('item', value)}
+                placeholder="Select Item"
                 className="glass-select-medium"
-              >
-                <option value="">No Item</option>
-                {mockItems.map(item => (
-                  <option key={item} value={item}>{item}</option>
-                ))}
-              </select>
+                allowEmpty={true}
+                emptyText="No Item"
+              />
             </div>
             
             <div className="attribute-group">
               <label>Ability</label>
-              <select
+              <SearchableSelect
+                options={mockAbilities}
                 value={formData.ability}
-                onChange={(e) => handleInputChange('ability', e.target.value)}
+                onChange={(value) => handleInputChange('ability', value)}
+                placeholder="Select Ability"
                 className="glass-select-medium"
-              >
-                <option value="">Select Ability</option>
-                {mockAbilities.map(ability => (
-                  <option key={ability} value={ability}>{ability}</option>
-                ))}
-              </select>
+                allowEmpty={true}
+                emptyText="No Ability"
+              />
             </div>
             
             <div className="attribute-group">
               <label>Nature</label>
-              <select
+              <SearchableSelect
+                options={mockNatures}
                 value={formData.nature}
-                onChange={(e) => handleInputChange('nature', e.target.value)}
+                onChange={(value) => handleInputChange('nature', value)}
+                placeholder="Select Nature"
                 className="glass-select-medium"
-              >
-                {mockNatures.map(nature => (
-                  <option key={nature} value={nature}>{nature}</option>
-                ))}
-              </select>
+              />
             </div>
           </div>
 
@@ -325,16 +344,15 @@ const PokemonEditor = ({ pokemon, onSave, onClose, onDelete }) => {
             <div className="moves-grid">
               {formData.moves.map((move, index) => (
                 <div key={index} className="move-slot">
-                  <select
+                  <SearchableSelect
+                    options={mockMoves}
                     value={move}
-                    onChange={(e) => handleMovesChange(index, e.target.value)}
+                    onChange={(value) => handleMovesChange(index, value)}
+                    placeholder={`Move ${index + 1}`}
                     className="glass-select-move"
-                  >
-                    <option value="">Move {index + 1}</option>
-                    {mockMoves.map(m => (
-                      <option key={m} value={m}>{m}</option>
-                    ))}
-                  </select>
+                    allowEmpty={true}
+                    emptyText="No Move"
+                  />
                 </div>
               ))}
             </div>
@@ -367,6 +385,7 @@ const PokemonEditor = ({ pokemon, onSave, onClose, onDelete }) => {
                       value={formData.evs[key]}
                       onChange={(e) => handleEVChange(key, e.target.value)}
                       className="ev-slider"
+                      disabled={!canIncreaseEV(key) && parseInt(e.target.value) > formData.evs[key]}
                       style={{ 
                         '--stat-color': color,
                         '--fill-width': `${(formData.evs[key] / 252) * 100}%`
