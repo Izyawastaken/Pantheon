@@ -80,7 +80,7 @@ body {
 
 .shadow-accent {
   box-shadow: 
-    0 0 20px var(--accent-color),
+    0 0 20px rgba(255, 255, 255, 0.3),
     0 8px 32px 0 rgba(31, 38, 135, 0.37);
 }
 
@@ -97,8 +97,7 @@ body {
 
 .glass-input:focus {
   outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
   background: rgba(255, 255, 255, 0.08);
 }
 
@@ -119,8 +118,7 @@ body {
 
 .glass-select:focus {
   outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .glass-select option {
@@ -145,21 +143,21 @@ body {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: var(--accent-color);
+  background: rgba(255, 255, 255, 0.8);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .stat-slider::-webkit-slider-thumb:hover {
   transform: scale(1.2);
-  box-shadow: 0 0 10px var(--accent-color);
+  background: #ffffff;
 }
 
 .stat-slider::-moz-range-thumb {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: var(--accent-color);
+  background: rgba(255, 255, 255, 0.8);
   cursor: pointer;
   border: none;
   transition: all 0.3s ease;
@@ -167,12 +165,12 @@ body {
 
 .stat-slider::-moz-range-thumb:hover {
   transform: scale(1.2);
-  box-shadow: 0 0 10px var(--accent-color);
+  background: #ffffff;
 }
 
 /* Buttons */
 .btn-primary {
-  background: var(--accent-color);
+  background: #ffffff;
   color: #000000;
   border: none;
   padding: 12px 24px;
@@ -187,7 +185,7 @@ body {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 240, 255, 0.4);
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
 }
 
 .btn-primary:disabled {
