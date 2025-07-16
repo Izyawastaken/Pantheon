@@ -284,6 +284,159 @@ body {
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
+/* Remove input number spinners */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Searchable Select Component */
+.searchable-select {
+  position: relative;
+  width: 100%;
+}
+
+.select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+}
+
+.select-trigger:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.select-value {
+  flex: 1;
+  font-size: 1rem;
+}
+
+.select-value.placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.select-arrow {
+  transition: transform 0.3s ease;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.select-arrow.rotate {
+  transform: rotate(180deg);
+}
+
+.select-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(20, 20, 20, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.75rem;
+  margin-top: 0.5rem;
+  max-height: 300px;
+  overflow: hidden;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.search-container svg {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.options-container {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.select-option {
+  padding: 0.75rem;
+  cursor: pointer;
+  color: white;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.select-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.select-option.selected {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+
+.select-option.disabled {
+  cursor: not-allowed;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.select-option.disabled:hover {
+  background: transparent;
+}
+
+/* Size variants for SearchableSelect */
+.glass-select-large .select-trigger {
+  padding: 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.glass-select-small .select-trigger {
+  padding: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.glass-select-medium .select-trigger {
+  padding: 1rem;
+  font-size: 1rem;
+}
+
+.glass-select-move .select-trigger {
+  padding: 0.5rem;
+  font-size: 1rem;
+  background: transparent;
+  border: none;
+}
+
+.glass-select-move .select-trigger:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
 /* Pokemon Editor Modal */
 .pokemon-editor-overlay {
   position: fixed;
@@ -445,8 +598,7 @@ body {
   gap: 1rem;
 }
 
-.glass-input-large,
-.glass-select-large {
+.glass-input-large {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 0.75rem;
@@ -457,16 +609,13 @@ body {
   transition: all 0.3s ease;
 }
 
-.glass-input-large:focus,
-.glass-select-large:focus {
+.glass-input-large:focus {
   outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
   background: rgba(255, 255, 255, 0.12);
 }
 
-.glass-input-small,
-.glass-select-small {
+.glass-input-small {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 0.5rem;
@@ -476,11 +625,9 @@ body {
   transition: all 0.3s ease;
 }
 
-.glass-input-small:focus,
-.glass-select-small:focus {
+.glass-input-small:focus {
   outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 1px rgba(0, 240, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .shiny-toggle {
@@ -497,7 +644,6 @@ body {
 .shiny-toggle.active {
   background: var(--accent-color);
   border-color: var(--accent-color);
-  box-shadow: 0 0 10px var(--accent-color);
 }
 
 .toggle-slider {
@@ -535,22 +681,6 @@ body {
   gap: 0.5rem;
 }
 
-.glass-select-medium {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.75rem;
-  padding: 1rem;
-  color: white;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-}
-
-.glass-select-medium:focus {
-  outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.2);
-}
-
 .moves-section {
   display: flex;
   flex-direction: column;
@@ -580,21 +710,6 @@ body {
 
 .move-slot:hover {
   background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-}
-
-.glass-select-move {
-  background: transparent;
-  border: none;
-  color: white;
-  font-size: 1rem;
-  width: 100%;
-  padding: 0.5rem;
-  cursor: pointer;
-}
-
-.glass-select-move:focus {
-  outline: none;
 }
 
 /* Stats Section */
@@ -692,6 +807,11 @@ body {
   transition: all 0.3s ease;
 }
 
+.ev-slider:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 .ev-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -700,13 +820,15 @@ body {
   border-radius: 50%;
   background: var(--stat-color);
   cursor: pointer;
-  box-shadow: 0 0 8px var(--stat-color);
   transition: all 0.3s ease;
 }
 
 .ev-slider::-webkit-slider-thumb:hover {
   transform: scale(1.2);
-  box-shadow: 0 0 15px var(--stat-color);
+}
+
+.ev-slider:disabled::-webkit-slider-thumb:hover {
+  transform: none;
 }
 
 .ev-slider::before {
@@ -718,7 +840,6 @@ body {
   width: var(--fill-width);
   background: linear-gradient(90deg, var(--stat-color), var(--stat-color));
   border-radius: 4px;
-  box-shadow: 0 0 8px var(--stat-color);
   transition: all 0.3s ease;
 }
 
@@ -738,8 +859,7 @@ body {
 .ev-input:focus,
 .iv-input:focus {
   outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 1px rgba(0, 240, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .final-stat {
@@ -812,25 +932,12 @@ body {
 
 .btn-save:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 240, 255, 0.4);
 }
 
 .btn-save:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
-}
-
-/* Select Option Styling */
-select option {
-  background: #1a1a1a;
-  color: white;
-  padding: 0.5rem;
-}
-
-select option:hover {
-  background: var(--accent-color);
-  color: #000;
 }
 
 /* Responsive Design */
