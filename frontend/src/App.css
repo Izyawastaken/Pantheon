@@ -915,7 +915,7 @@ input[type="number"] {
 }
 
 .btn-save {
-  background: var(--accent-color);
+  background: #ffffff;
   color: #000;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -930,6 +930,7 @@ input[type="number"] {
 
 .btn-save:hover {
   transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
 }
 
 .btn-save:disabled {
