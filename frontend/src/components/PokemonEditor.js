@@ -385,7 +385,7 @@ const PokemonEditor = ({ pokemon, onSave, onClose, onDelete }) => {
                       value={formData.evs[key]}
                       onChange={(e) => handleEVChange(key, e.target.value)}
                       className="ev-slider"
-                      disabled={!canIncreaseEV(key) && parseInt(e.target.value) > formData.evs[key]}
+                      disabled={getRemainingEVs() <= 0 && formData.evs[key] === 0}
                       style={{ 
                         '--stat-color': color,
                         '--fill-width': `${(formData.evs[key] / 252) * 100}%`
