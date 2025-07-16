@@ -991,7 +991,7 @@ input[type="number"] {
 }
 
 .pokemon-card:hover {
-  box-shadow: 0 0 0 2px var(--accent-color), 0 4px 24px rgba(0,0,0,0.18);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4), 0 4px 24px rgba(0,0,0,0.18);
   filter: brightness(1.04);
   transform: translateY(-2px);
   transition: all 0.2s ease;
@@ -1005,7 +1005,7 @@ input[type="number"] {
 
 .pokemon-card h2 {
   font-size: 1.4rem;
-  color: var(--accent-color);
+  color: #ffffff;
   margin-bottom: 0.5rem;
   font-weight: 600;
 }
