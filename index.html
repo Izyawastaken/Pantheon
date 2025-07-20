@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pantheon — Pokémon Team Builder</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap" rel="stylesheet"/>
+</head>
+<body>
+  <header class="pantheon-header">
+    <h1 class="pantheon-title">Pantheon</h1>
+    <div class="accent-picker-area">
+      <label class="accent-label" for="accentPicker">Accent Color:</label>
+      <input type="color" id="accentPicker" class="accent-picker" value="#00f0ff" aria-label="Pick accent color"/>
+    </div>
+  </header>
+  <main class="pantheon-main">
+    <section class="team-grid" id="teamGrid" aria-label="Team Slots">
+      <!-- 6 slots will be injected by JS -->
+    </section>
+    <div class="export-controls">
+      <button class="btn glassy export-btn" id="exportNeoPaste" aria-label="Export to NeoPaste">Export to NeoPaste</button>
+      <button class="btn glassy export-btn" id="exportPNG" aria-label="Export as PNG">Export as PNG</button>
+      <button class="btn glassy export-btn" id="exportTeam" aria-label="Export Entire Team">Export Entire Team</button>
+    </div>
+  </main>
+  <footer class="pantheon-footer">
+    <span>© 2025 Pantheon • For educational use • Inspired by NeoPaste</span>
+  </footer>
+  <div id="pokemonModal" class="modal hidden" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-content glassy">
+      <span class="modal-close" tabindex="0" role="button" aria-label="Close">&times;</span>
+      <div class="modal-scrollable">
+        <div class="sprite-container">
+          <img id="pokeSprite" class="poke-sprite" src="" alt="Pokémon Sprite" onerror="this.src='placeholder.png';"/>
+        </div>
+        <input type="text" id="pokeName" class="modal-input bold-input" placeholder="Pokémon Name" maxlength="20"/>
+        <section class="modal-moves">
+          <input type="text" class="modal-input move-input" placeholder="Move 1" maxlength="15"/>
+          <input type="text" class="modal-input move-input" placeholder="Move 2" maxlength="15"/>
+          <input type="text" class="modal-input move-input" placeholder="Move 3" maxlength="15"/>
+          <input type="text" class="modal-input move-input" placeholder="Move 4" maxlength="15"/>
+        </section>
+        <div class="fields-row">
+          <input type="text" class="modal-input item-input" placeholder="Item" maxlength="16"/>
+          <input type="text" class="modal-input ability-input" placeholder="Ability" maxlength="16"/>
+        </div>
+        <section class="stats-section">
+          <!-- Each stat row rendered by JS for easier code -->
+        </section>
+        <label class="nature-label" for="natureSel">Nature:</label>
+        <select id="natureSel" class="modal-input select-input">
+          <option>Hardy</option><option>Lonely</option><option>Brave</option>
+          <option>Adamant</option><option>Naughty</option><option>Bold</option>
+          <option>Docile</option><option>Relaxed</option><option>Impish</option>
+          <option>Lax</option><option>Timid</option><option>Hasty</option>
+          <option>Serious</option><option>Jolly</option><option>Naive</option>
+          <option>Modest</option><option>Mild</option><option>Quiet</option>
+          <option>Bashful</option><option>Rash</option><option>Calm</option>
+          <option>Gentle</option><option>Sassy</option><option>Careful</option>
+          <option>Quirky</option>
+        </select>
+        <textarea id="modalNotes" class="modal-input note-area" rows="2" placeholder="Notes..."></textarea>
+        <div class="modal-actions">
+          <button class="btn glassy save-btn" id="modalSave">Save</button>
+          <button class="btn glassy cancel-btn" id="modalCancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
